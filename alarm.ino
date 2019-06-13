@@ -19,7 +19,7 @@ char keymap[numRows][numCols]=
 };
 
 //Code that shows the the keypad connections to the arduino terminals
-byte rowPins[numRows] = {53,51,49,47}; //Rows 0 to 3
+byte rowPins[numRows] = {42,40,49,47}; //Rows 0 to 3
 byte colPins[numCols]= {45,43,41,39}; //Columns 0 to 3
 
 //initializes an instance of the Keypad class
@@ -42,10 +42,12 @@ int moving = 0;
 
 int timeFlag = 0;
 
+int canBeArmed = 0;
+
 unsigned int startTime;
 unsigned int finalTime;
 
-int totalTime = 5000;
+int totalTime = 10000;
 
 int alarm = 0;
 
@@ -61,8 +63,8 @@ lcd.begin(16, 2);
  pinMode(pirPin, INPUT);
  Serial.print("Inicialisando...");
  //Serial.print(password[3]);
- delay(5000);
- lcd.print("  Alarm is ON");
+ //delay(5000);
+ //lcd.print("  Alarm is ON");
 }
 
 //If key is pressed, this key is stored in 'keypressed' variable
@@ -70,13 +72,36 @@ lcd.begin(16, 2);
 //if count=17, then count is reset back to 0 (this means no key is pressed during the whole keypad scan process
 void loop()
 {
+char keypressed = myKeypad.getKey();
+    
+  while(!canBeArmed){
+
+    keypressed = myKeypad.getKey();
+    lcd.setCursor(0, 0); 
+    lcd.print("   Waiting...");
+
+    if (keypressed=='*'){
+      
+      canBeArmed = 1;
+      lcd.setCursor(0, 0); 
+      lcd.print(" Alarm is going  ");
+      lcd.setCursor(0, 1); 
+      lcd.print("    to be set    ");
+      delay(10000);
+      lcd.setCursor(0, 0); 
+      lcd.print("  Alarm is ON    ");
+      lcd.setCursor(0, 1); 
+      lcd.print("                  ");
+      }
+    
+    }
   
  pirValue = digitalRead(pirPin);
  if (pirValue){
   moving=1;
   }
  
-char keypressed = myKeypad.getKey();
+
 
 startTime = millis();
 
